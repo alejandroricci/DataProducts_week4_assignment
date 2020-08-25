@@ -1,0 +1,10 @@
+name: shiny
+title:
+username:
+account: alejandror
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2706478
+bundleId: 3556874
+url: https://alejandror.shinyapps.io/shiny/
+when: 1598381496.6662

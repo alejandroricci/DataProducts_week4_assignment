@@ -86,3 +86,7 @@ Well then, the day is finally here! With the brand new **HEIGHTMATIC-9000!** you
 ```
 
 ## Sources
+
+- Shiny App: https://alejandror.shinyapps.io/shiny/
+
+- Code: https://github.com/alejandroricci/DataProducts_week4_assignment
