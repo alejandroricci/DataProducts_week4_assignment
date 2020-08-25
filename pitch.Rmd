@@ -1,0 +1,88 @@
+---
+title: "HEIGHTMATIC-9000!"
+subtitle: "(Developing Data Products - Week 4 - Pitch)"
+output: ioslides_presentation
+author: "Alejandro Ricci"
+date: "August 25, 2020"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+library(data.table)
+library(HistData)
+library(plotly)
+
+data(GaltonFamilies)
+dt_heights <- as.data.table(GaltonFamilies)
+
+#First convert all heights to cms (because I don't use inches)
+inch_to_cm <- 2.54
+dt_heights[, father := father * inch_to_cm]
+dt_heights[, mother := mother * inch_to_cm]
+dt_heights[, midparentHeight := midparentHeight * inch_to_cm]
+dt_heights[, childHeight := childHeight * inch_to_cm]
+
+#Create the model
+lm_model <- lm(data = dt_heights, formula = childHeight ~ father + mother + gender)
+```
+
+## Have you ever wondered how tall your children would be?
+
+Of all four people that were interviewed, **100%** said that they would like to know the heights of their future children if that was possible.
+
+Well then, the day is finally here! With the brand new **HEIGHTMATIC-9000!** you can now predict the height your future children will have! <font size="1">(up to 95% accuracy)</font>
+
+## Answering questions like:
+
+- Do I have to buy a basketball hoop?
+- Should I bother to baby proof this tall table?
+- What size of clothes should I buy for their prom?
+
+## We have changed many lives already!
+
+<font size="4">Carla (1.70m) and Peter (1.75m) wanted to know the height of their future children, but after much searching nothing seemed to work. They almost had given up when they found about **HEIGHTMATIC-9000!**, and now all their doubts are cleared. They even got raises in their jobs and lost a few pounds!</font>
+
+```{r pressure, warning = FALSE, message = FALSE, fig.height = 4}
+#Predict new values
+        dt_new_height <- data.table(father = 175,
+                                    mother = 170,
+                                    gender = c("male", "female"))
+        prediction <- predict.lm(object = lm_model, newdata = dt_new_height, interval = "prediction")
+        prediction <- as.data.table(prediction)
+        prediction[, gender := c("male", "female")]
+        prediction[, individual := c("Son", "Daughter")]
+        prediction[, colors := c("#2da9d9", "#b73377")]
+        prediction[, sd := round(fit - lwr, 2)]
+        prediction[, fit := round(fit, 2)]
+
+        prediction$individual <- factor(prediction$individual, levels = prediction$individual)
+        
+        fig2 <- plot_ly(
+            data = prediction,
+            x = ~individual,
+            y = ~fit,
+            error_y = list(array = ~sd,
+                           color = "black"),            
+            type = "bar",
+            color = ~individual,
+            colors = ~colors,
+            hoverinfo = "text", text = ~paste0(individual,
+                                               "\nHeight: ", fit, " +/- ", sd ," cm")      
+        )
+        fig2 <- fig2 %>% layout(
+            title = "<b>Children</b>",
+            xaxis = list(
+                title = "Individual"
+            ),
+            yaxis = list(
+                title = "Height (cm)",
+                range = c(100, 220)
+            ),    
+            showlegend = FALSE
+        )
+        
+        fig2
+```
+
+## Sources
